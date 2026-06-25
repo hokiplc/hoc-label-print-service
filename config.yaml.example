@@ -1,0 +1,40 @@
+# Optional YAML config. Environment variables (see .env.example) always override these values.
+# Copy to config.yaml if you prefer file-based config over .env.
+
+host: 0.0.0.0
+port: 8080
+
+api_key: change-me-to-a-long-random-string
+
+allowed_cidrs:
+  - 192.168.0.0/16
+  - 10.0.0.0/8
+  - 127.0.0.1/32
+
+default_printer_model: QL-700
+default_label_width_mm: 62
+usb_backend: pyusb
+printer_identifier: ""
+
+preview_dir: /var/lib/hoc-label-print/previews
+log_dir: /var/log/hoc-label-print
+db_path: /var/lib/hoc-label-print/jobs.db
+font_dir: /opt/hoc-label-print/fonts
+
+debug: false
+queue_concurrency: 1
+idempotency_window_seconds: 120
+rate_limit_per_minute: 60
+
+enabled_templates:
+  - house-of-coffee-62mm
+
+template_constants:
+  house-of-coffee-62mm:
+    border_width_px: 4
+    padding_px: 16
+    line_spacing_px: 6
+    header_font_size: 34
+    product_font_size: 30
+    attr_font_size: 22
+    footer_font_size: 20

@@ -1,0 +1,4 @@
+# udev rule granting non-root USB access to the Brother QL-700 (vendor 04f9, product 2042).
+# Install to /etc/udev/rules.d/99-brother-ql700.rules and run:
+#   udevadm control --reload-rules && udevadm trigger
+SUBSYSTEM=="usb", ATTR{idVendor}=="04f9", ATTR{idProduct}=="2042", MODE="0660", GROUP="hoclabel"
