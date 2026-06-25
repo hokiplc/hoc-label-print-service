@@ -1,0 +1,5 @@
+[project]
+name = "hoc-label-print-service"
+version = "1.0.0"
+description = "LAN label-printing microservice for Brother QL-700, House of Coffee 62mm labels"
+requires-python = ">=3.9"
