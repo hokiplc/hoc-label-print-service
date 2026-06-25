@@ -127,11 +127,60 @@ file. Key settings: `HOC_API_KEY`, `HOC_ALLOWED_CIDRS`, `HOC_DEFAULT_PRINTER_MOD
 
 ### 1. Prerequisites
 
-- Raspberry Pi OS (Bookworm or later recommended), with a fixed IP or DHCP
-  reservation on the local network so the WooCommerce plugin has a stable
-  address (set this in your router's DHCP settings, or use `dhcpcd`/
-  NetworkManager static IP configuration — out of scope of this service).
+- Raspberry Pi OS (Bookworm or later recommended).
 - Brother QL-700 connected via USB, with 62mm continuous label roll loaded.
+- A stable LAN address for the Pi (see below) so the WooCommerce plugin's
+  configured endpoint never changes.
+
+#### Give the Pi a stable LAN address
+
+Pick **one** of the following. A router-side DHCP reservation is usually
+simplest and easiest to change later without touching the Pi.
+
+**Option A — DHCP reservation on the router (recommended)**
+
+1. Find the Pi's MAC address: `ip link show wlan0` or `ip link show eth0`
+   (look for the `link/ether` value).
+2. In your router's admin UI, find "DHCP reservations" / "Address reservation"
+   / "Static leases" (naming varies by vendor) and bind that MAC address to a
+   free IP outside the router's dynamic pool, e.g. `192.168.1.50`.
+3. Reboot the Pi (or release/renew its lease) and confirm with `hostname -I`.
+
+**Option B — Static IP on the Pi itself, via `dhcpcd` (Bookworm and earlier
+default network manager)**
+
+```bash
+sudo nano /etc/dhcpcd.conf
+```
+
+Append (adjust subnet, gateway, and DNS to match your network):
+
+```
+interface eth0
+static ip_address=192.168.1.50/24
+static routers=192.168.1.1
+static domain_name_servers=192.168.1.1 1.1.1.1
+```
+
+```bash
+sudo systemctl restart dhcpcd
+```
+
+**Option C — Static IP via NetworkManager (Raspberry Pi OS Bookworm default
+on some images, or if you've switched to NetworkManager)**
+
+```bash
+nmcli connection show              # find your connection name, e.g. "Wired connection 1"
+sudo nmcli connection modify "Wired connection 1" \
+  ipv4.addresses 192.168.1.50/24 \
+  ipv4.gateway 192.168.1.1 \
+  ipv4.dns "192.168.1.1 1.1.1.1" \
+  ipv4.method manual
+sudo nmcli connection up "Wired connection 1"
+```
+
+Verify with `ip a` and `ping <router-ip>` after either option, then point the
+WooCommerce plugin at `http://<that-ip>:8080`.
 
 ### 2. Install
 
